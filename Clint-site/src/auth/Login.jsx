@@ -1,4 +1,5 @@
 import { useForm } from "react-hook-form";
+import { Link } from "react-router";
 
 function Login() {
   const {
@@ -50,6 +51,12 @@ function Login() {
             <a className="link link-hover">Forgot password?</a>
           </div>
           <button className="btn btn-neutral mt-4">Login</button>
+          <span className="text-sm mt-2">
+            Don't have an account?
+            <Link to="/register" className="link link-hover text-blue-500">
+              <b> Register</b>
+            </Link>
+          </span>
         </fieldset>
       </form>
     </div>

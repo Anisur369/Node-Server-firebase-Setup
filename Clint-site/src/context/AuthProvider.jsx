@@ -1,9 +1,21 @@
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signOut,
+  updateProfile,
+  GoogleAuthProvider,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  onAuthStateChanged,
+} from "firebase/auth";
 import { AuthContext } from "./AuthContext";
 import { auth } from "../firebase/firebase.init";
+import { useState, useEffect } from "react";
+
 function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const googleProvider = new GoogleAuthProvider();
 
   const createUser = async (email, password, name, photoURL) => {
     setLoading(true);
@@ -25,8 +37,45 @@ function AuthProvider({ children }) {
     }
   };
 
+  const signInUser = (email, password) => {
+    setLoading(true);
+    return signInWithEmailAndPassword(auth, email, password);
+  };
+
+  const signOutUser = () => {
+    setLoading(false);
+    setUser(null);
+    return signOut(auth);
+  };
+
+  // const resetPassword = (email) => {
+  //   setLoading(true);
+  //   return firebaseResetPassword(auth, email);
+  // };
+
+  const signInWithGoogle = () => {
+    setLoading(true);
+    return signInWithPopup(auth, googleProvider);
+  };
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        setLoading(true);
+        setUser(currentUser);
+        setLoading(false);
+      } else {
+        setLoading(false);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
   const authInfo = {
     createUser,
+    signInUser,
+    signOutUser,
+    signInWithGoogle,
     user,
     loading,
   };
